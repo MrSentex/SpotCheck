@@ -35,7 +35,27 @@ Cookie: fb_continue=https%3A%2F%2Fwww.spotify.com%2Fid%2Faccount%2Foverview%2F; 
 remember=true&username=test@test.com&password=thisisatest1234&csrf_token=<token>
  ```
  
- ## ¿Utilización?
+ ## Instalación
+ 
+ Lo primero qué se necesita es clonar o descargar el repositorio.
+ 
+ SpotCheck al ser un script en Python es necesario la instalación del mismo. Para ello solo se necesita una busqueda en google.
+ 
+ SpotCheck es compatible con Python 2.7 y Python 3.x.
+ Despues de instalar Python es necesario la instalación de varios modulos/paquetes los cuales son `PySocks` y `colorama`. Los cuales se instalan con pip o pip3 con el siguiente comando: 
+ 
+ ```
+ pip install <paquete>
+ ```
+ 
+ Si eres demasiado vago para instalar dos paquetes se pueden instalar con un solo comando:
+ ```
+ pip install -r requeriments.txt
+ ```
+ Este comando se tiene que ejecutar desde la carpeta de SpotCheck.
+ 
+ 
+ ## Utilización
  
  Ya que SpotCheck es un script automatizado su uso es muy sencillo.
  Los argumentos obligatorios son:
