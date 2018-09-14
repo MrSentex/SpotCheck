@@ -1,4 +1,4 @@
-# SpotCheck v0.1-Beta
+# SpotCheck v0.2-Beta
   
 ## ¿Que es SpotCheck?  
 SpotCheck es un chequeador  de cuentas escrito en Python. SpotCheck consigue evadir la seguridad de Spotify para conseguir probar cuentas a una velocidad decente.  SpotCheck nació por un reto entre amigos y no debe ser usado para cometer ningún tipo de delito. Si decides cometer un delito con SpotCheck lo haces bajo tu responsabilidad. SpotCheck no necesita ningun tipo de proxy a menos que especifiques el uso de TOR.  
@@ -87,3 +87,13 @@ remember=true&username=test@test.com&password=thisisatest1234&csrf_token=<token>
    ```
   python SpotCheck.py combo.txt accounts.txt --nothreads
   ```
+  
+# Changelog  
+### 13/09/2018 v0.1-Beta
+```
+ Creación del proyecto.
+```  
+### 14/09/2018 v0.2-Beta
+```
+Mejora en el sistema de adquisición de la csrf_token.
+```
