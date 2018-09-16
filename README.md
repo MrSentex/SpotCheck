@@ -68,10 +68,10 @@ remember=true&username=test@test.com&password=thisisatest1234&csrf_token=<token>
  Argumentos opcionales:
  
  ### --tor
- Si es especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a realizar las peticiones a traves de TOR. (Impacto en el rendimiento)
+ Si se especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a realizar las peticiones a traves de TOR. (Impacto en el rendimiento)
  
  ### --nothreads
-  Si es especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a chequear las cuentas en el proceso principal de SpotCheck (Impacto en el rendimiento)
+  Si se especifica este argumento en el comando de ejecución de SpotCheck obligara al programa a chequear las cuentas en el proceso principal de SpotCheck (Impacto en el rendimiento)
   
   ## Ejemplo de uso sin TOR
   ```
