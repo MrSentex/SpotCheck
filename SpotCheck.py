@@ -22,7 +22,7 @@ def header():
    |\_________\|__|     \|_______|    \|__|  \|_______|\|__|\|__|\|_______|\|_______|\|__| \|__|
    \|_________|                                                                                 
  
-By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.3-Beta
+By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.3-Stable
 ''')
 
 class colors:
