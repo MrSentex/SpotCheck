@@ -99,6 +99,5 @@ Mejora en el sistema de adquisición de la csrf_token.
 ```
 ### 09/10/2018 v0.3-Stable
 ```
-Mejora en el rendimiento (Thread por cuenta).
-Añadida barra de carga.
+Mejora en el rendimiento (Calcula el numero de threads necesarios).
 ```
