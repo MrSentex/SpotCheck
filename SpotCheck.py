@@ -3,6 +3,7 @@ import threading
 from colorama import Fore, init
 import os, sys
 import socket, time
+from multiprocessing.dummy import Pool
 from tqdm import tqdm
 import ssl, json
 
@@ -130,24 +131,52 @@ def check_account(account):
         output(account[0], account[1])
 
 def thread(list_):
-    for email, password in list_:
-        check_account([email, password])
+    for account in list_:
+        check_account(account)
+
+def calculate(n):
+    valid_n = []
+
+    for r in range(n):
+        if r == 0:
+            continue
+        if n % r == 0:
+            valid_n.append(r)
+    if len(valid_n) == 2:
+        return 1
+    return valid_n[len(valid_n)-1]
+
+def explode(array, parts):
+    new_array = []
+
+    p = 0
+    n = len(array) / parts
+    r = n+1
+    j = 0
+
+    while True:
+        new_array.append(array[j:r])
+        r += n
+        j += n
+        p += 1
+
+        if p == parts:
+            break
+
+    return new_array
 
 def start():
     s_time = time.time()
     load_list(args.combo)
     if not args.nothreads:
-        
-        threads = []
-        for account in ACCOUNTS:
-            t = threading.Thread(target=check_account, args=(account, ))
-            threads.append(t)
-        for x in threads:
-            x.start()
-        r = 0
-        for i in tqdm(range(int(len(threads))), ascii=True, desc="Procesando"):
-            threads[r].join()
-            r+=1
+        colors.info('Repartiendo la carga...')
+
+        c = explode(ACCOUNTS, calculate(len(ACCOUNTS)))
+        colors.info('Numero de threads: '+str(calculate(len(ACCOUNTS))))
+        colors.correct('Iniciando...\n')
+
+        pool = Pool(calculate(len(ACCOUNTS)))
+        res = pool.map(thread, c)
 
         with open(args.output, 'w') as output:
             for x in OT:
