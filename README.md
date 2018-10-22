@@ -10,7 +10,7 @@ Ejemplo de una web request con `PySocks` y `ssl`:
 ```python
 no_ssl_socket = socks.socksocket()
 ssl_socket = ssl.wrap_socket(no_ssl_socket, ssl_version=ssl.PROTOCOL_SSLv23)
-ssl_socket.connect(('accounts.spotify.com', 443))
+ssl_socket.connect(('accounts.spotify.com', 443)) y
 ssl_socket.sendall(b'GET / HTTP/1.1\r\nHost: accounts.spotify.com\r\n\r\n')
 ```    
 El funcionamiento interno de SpotCheck es sencillo. Se realiza un *GET* a **accounts.spotify.com** para conseguir la *csrf_token*, la cual nos ayudara a tener acceso a la API de autentificación de Spotify: **accounts.spotify.com/api/login**. La API de autentificación se puede ver en el AJAX de Spotify (Publico).  
@@ -63,7 +63,7 @@ remember=true&username=test@test.com&password=thisisatest1234&csrf_token=<token>
  ### combo
  ### output
  
- Estos dos argumentos determinan el fichero donde se tienen listas y emails en formato combo (email:password) y el archivo donde se almacenaran las cuentas que funcionen correctamente.
+ Estos dos argumentos determinan el fichero donde se tienen listas de emails y contraseñas en formato combo (email:password) y el archivo donde se almacenaran las cuentas que funcionen correctamente.
  
  Argumentos opcionales:
  
