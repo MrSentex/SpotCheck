@@ -1,3 +1,4 @@
 colorama
-PySocks
+requests
 tqdm
+bs4
