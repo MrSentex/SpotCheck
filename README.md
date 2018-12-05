@@ -62,4 +62,5 @@ Renewed the code of SpotCheck.py.
 Progress Bar added to the --nothread argument.
 Removed the threads calculate.
 Added account info system (Now you can get the type of the account, country and if is the admin of a Family Premium account too).
+Added different types of outputs types (txt, json, xml, html).
 ```
