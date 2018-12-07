@@ -6,8 +6,8 @@
 SpotCheck is an account checker for the **Spotify** stream music service written in **Python 2.7**. SpotCheck manages to evade the **Spotify** *security system* that prevents the check of accounts massively. The **Spotify** *security system* is simply a **CSRF token**, a system implemented by many pages to avoid checking accounts on theirs platform but this *security system* is not very secure. Not enough for a company like **Spotify**. **SpotCheck is a challenge between friends and with the intention of educating so it should not be used to commit any type of crime that will be committed under the responsibility of the user of the program not the creator of the same**.  
 
 ## How does its works?  
-Obviously with some magic and a bit of Matrix shit. Nah just kidding.  
-SpotCheck uses as a main base the module of `requests` to make requests to different parts of **Spotify**. The first thing you get is the CSRF token which is obtained at accounts.spotify.com for later use in the login API hosted at **accounts.spotify.com/api/login** with the username, password, etc ... Depending on the parameters of the API response the user and password will be correct or incorrect. If they are correct, a request will be created to **spotify.com/de/account/overview/** to get more information about the account.  
+Obviously with some magic and a bit of Matrix shit. Nah just kidding.    
+SpotCheck uses as a main base the module of `requests` to make requests to different parts of **Spotify**. The first thing you get is the CSRF token which is obtained at **accounts.spotify.com** for later use in the login API hosted at **accounts.spotify.com/api/login** with the username, password, etc ... Depending on the parameters of the API response the user and password will be correct or incorrect. If they are correct, a request will be created to **spotify.com/de/account/overview/** to get more information about the account.  
 
 ## Installation
 
