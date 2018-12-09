@@ -228,13 +228,14 @@ class Output(object):
             with open(self.file+self.extension, "a") as output_:
                 for account in accounts:
                     if account.get("account_login") == "success":
-                        output_.write(self.sep)
-                        output_.write("Username: {}\n".format(account["Username"]))
-                        output_.write("Password: {}\n".format(account["Password"]))
-                        output_.write("As Combo: {}:{}\n".format(account["Username"], account["Password"]))
-                        output_.write("Account Type: {}\n".format(account["AccountType"]))
-                        output_.write("Country: {}\n".format(account["Country"]))
-                        output_.write("Admin: {}\n".format(account["Admin"]))
+                        if account.get("AccountType") != "Spotify Free":
+                            output_.write(self.sep)
+                            output_.write("Username: {}\n".format(account["Username"]))
+                            output_.write("Password: {}\n".format(account["Password"]))
+                            output_.write("As Combo: {}:{}\n".format(account["Username"], account["Password"]))
+                            output_.write("Account Type: {}\n".format(account["AccountType"]))
+                            output_.write("Country: {}\n".format(account["Country"]))
+                            output_.write("Admin: {}\n".format(account["Admin"]))
                 output_.close()
             colors.correct("Done! All saved successfully")
         except Exception as e:
@@ -403,7 +404,7 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
                     pass
             except KeyboardInterrupt:
                 print("\n")
-                colors.error("Ctrl + C detected, exiting...")
+                colors.error("Ctrl + C detected, exiting...\n")
                 Output_Manager.Save(self.results_array)
                 _exit(0)
 
@@ -418,7 +419,7 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
                         pbar.update(1)
             except KeyboardInterrupt:
                 print("\n")
-                colors.error("Ctrl + C detected, exiting...")
+                colors.error("Ctrl + C detected, exiting...\n")
                 Output_Manager.Save(self.results_array)
                 _exit(0)
 
