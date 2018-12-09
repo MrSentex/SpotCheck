@@ -17,7 +17,7 @@ import xml.etree.ElementTree as ET
 from json import dump
 # <-- End -->
 
-VERSION = "v0.4-Beta"
+VERSION = "v0.4-Stable"
 
 init()
 
@@ -252,7 +252,6 @@ class Output(object):
         elif self.type == "html":
             self.Save_html(accounts)
 
-
 class Spotify(object):
     def getCSRFtoken(self):
         while True:
@@ -375,11 +374,15 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
 
     def SpotCheck(self, account):
 
-
         email = account["email"]
         password = account["password"]
 
-        self.results_array.append(Spotify().SpotifyCheck(email, password))
+        while True:
+            try:
+                self.results_array.append(Spotify().SpotifyCheck(email, password))
+                break
+            except Exception:
+                pass
 
     def start_check(self):
 
@@ -401,6 +404,7 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
             except KeyboardInterrupt:
                 print("\n")
                 colors.error("Ctrl + C detected, exiting...")
+                Output_Manager.Save(self.results_array)
                 _exit(0)
 
         else:
@@ -415,6 +419,7 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
             except KeyboardInterrupt:
                 print("\n")
                 colors.error("Ctrl + C detected, exiting...")
+                Output_Manager.Save(self.results_array)
                 _exit(0)
 
         print("")
