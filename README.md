@@ -64,3 +64,8 @@ Removed the threads calculate.
 Added account info system (Now you can get the type of the account, country and if is the admin of a Family Premium account too).
 Added different types of outputs (txt, json, xml, html).
 ```
+### 09/12/2018 v0.4-Stable
+```
+Fixed SSL error.
+Now if you kill the program with Ctrl+C the alredy checked accounts will going to be saved.
+```
