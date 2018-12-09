@@ -68,4 +68,5 @@ Added different types of outputs (txt, json, xml, html).
 ```
 Fixed SSL error.
 Now if you kill the program with Ctrl+C the alredy checked accounts will going to be saved.
+If you check a large account list and you are running SpotCheck with Python 32 bits you can have memory errors caused by the Python memory limit. (Just run the .exe in releases).
 ```
