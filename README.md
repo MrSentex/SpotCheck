@@ -1,4 +1,4 @@
-# SpotCheck v0.4-Beta
+# SpotCheck v0.4-Stable
 
 ![Main_Image](https://developer.spotify.com/assets/branding-guidelines/logo@2x.png)
 
