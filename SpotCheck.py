@@ -10,7 +10,8 @@ from colorama import init, Fore
 # <-- Utils imports -->
 from os.path import exists, isfile
 from os import _exit, system, name
-from multiprocessing.dummy import Pool, cpu_count
+from multiprocessing.dummy import Pool
+from multiprocessing import cpu_count
 from tqdm import tqdm
 import argparse
 import xml.etree.ElementTree as ET
@@ -27,8 +28,8 @@ class Output(object):
         self.good_types = ["txt", "json", "xml", "html"]
         self.type = output_type.lower()
         self.file = output_file
-    
-        if not self.type in self.good_types:
+
+        if self.type not in self.good_types:
             colors.error("Output type not avaible, exiting...")
             _exit(1)
 
@@ -156,14 +157,11 @@ class Output(object):
                     elif account.get("AccountType") == "Premium Family":
                         if account.get("Admin"):
                             temp = ET.SubElement(AdminPremiumFamily, "account")
-                            temp.set("Username", account["Username"])
-                            temp.set("Password", account["Password"])
-                            temp.set("Country", account["Country"])
                         else:
                             temp = ET.SubElement(PremiumFamily, "account")
-                            temp.set("Username", account["Username"])
-                            temp.set("Password", account["Password"])
-                            temp.set("Country", account["Country"])
+                        temp.set("Username", account["Username"])
+                        temp.set("Password", account["Password"])
+                        temp.set("Country", account["Country"])
             XML = ET.tostring(Main)
             with open(self.file+self.extension, "w") as output_:
                 output_.write(XML)
@@ -182,12 +180,13 @@ class Output(object):
 
             colors.info("Saving as JSON in {}{}".format(self.file, self.extension))
 
-            json = {}
-            json["Spotify Free"] = []
-            json["Spotify Premium"] = []
-            json["Premium Family"] = []
-            json["Admin of Premium Family"] = []
-            json["Bad Accounts"] = []
+            json = {
+                "Spotify Free": [],
+                "Spotify Premium": [],
+                "Premium Family": [],
+                "Admin of Premium Family": [],
+                "Bad Accounts": [],
+            }
 
             for account in accounts:
                 if account.get("account_login") == "error":
@@ -227,15 +226,17 @@ class Output(object):
         try:
             with open(self.file+self.extension, "a") as output_:
                 for account in accounts:
-                    if account.get("account_login") == "success":
-                        if account.get("AccountType") != "Spotify Free":
-                            output_.write(self.sep)
-                            output_.write("Username: {}\n".format(account["Username"]))
-                            output_.write("Password: {}\n".format(account["Password"]))
-                            output_.write("As Combo: {}:{}\n".format(account["Username"], account["Password"]))
-                            output_.write("Account Type: {}\n".format(account["AccountType"]))
-                            output_.write("Country: {}\n".format(account["Country"]))
-                            output_.write("Admin: {}\n".format(account["Admin"]))
+                    if (
+                        account.get("account_login") == "success"
+                        and account.get("AccountType") != "Spotify Free"
+                    ):
+                        output_.write(self.sep)
+                        output_.write("Username: {}\n".format(account["Username"]))
+                        output_.write("Password: {}\n".format(account["Password"]))
+                        output_.write("As Combo: {}:{}\n".format(account["Username"], account["Password"]))
+                        output_.write("Account Type: {}\n".format(account["AccountType"]))
+                        output_.write("Country: {}\n".format(account["Country"]))
+                        output_.write("Admin: {}\n".format(account["Admin"]))
                 output_.close()
             colors.correct("Done! All saved successfully")
         except Exception as e:
@@ -320,9 +321,9 @@ class colors:
 class Main(object):
     def __init__(self, list, output, threads, output_type, nothread):
 
-        if threads == None:
+        if threads is None:
             threads = cpu_count()
-        if output_type == None:
+        if output_type is None:
             output_type = "txt"
 
         self.list = list
@@ -368,7 +369,7 @@ By MrSentex | @fbi_sentex | www.github.com/MrSentex | www.gitlab.com/MrSentex | 
             for line in lines:
                 line = line.replace('\n', '')
                 account = line.split(":")
-                if not len(account) == 2:
+                if len(account) != 2:
                     continue
                 self.accounts_array.append({"email" : account[0], "password" : account[1]})
             colors.correct(str(len(self.accounts_array)) + " accounts have been loaded succesfully\n")
